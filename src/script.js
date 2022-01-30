@@ -48,19 +48,33 @@ gltfLoader.setDRACOLoader(dracoLoader)
 //         scene.add(gltf.scene)
 //     }
 // )
-let mixer = null
+let foxMixer = null
+let foxAction = null
+let fox = null
 gltfLoader.load(
     '/models/Fox/glTF/Fox.gltf',
     (gltf) => {
-        mixer = new THREE.AnimationMixer(gltf.scene)
-        const action = mixer.clipAction(gltf.animations[1])
+        fox = gltf
+        foxMixer = new THREE.AnimationMixer(fox.scene)
+        foxAction = foxMixer.clipAction(fox.animations[0])
 
-        action.play()
+        foxAction.play()
 
-        gltf.scene.scale.set(.025,.025,.025)
-        scene.add(gltf.scene)
+        fox.scene.scale.set(.025,.025,.025)
+        scene.add(fox.scene)
     }
 )
+window.addEventListener('keydown', (e) => {
+    if (e.key == 'ArrowUp') {
+        foxAction = foxMixer.clipAction(fox.animations[1])
+        foxAction.play()
+    }
+})
+window.addEventListener('keyup', () => {
+    foxAction.stop()
+    foxAction = foxMixer.clipAction(fox.animations[0])
+    foxAction.play()
+})
 
 /**
  * Floor
@@ -154,8 +168,8 @@ const tick = () =>
     previousTime = elapsedTime
 
     // Update mixer
-    if (mixer) {
-        mixer.update(deltaTime)
+    if (foxMixer) {
+        foxMixer.update(deltaTime)
     }
 
     // Update controls
